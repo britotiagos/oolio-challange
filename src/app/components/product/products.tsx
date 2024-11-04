@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Product from "./product";
 import { ProductType } from "../../types/components/ProductType";
 import SideBar from "../SideBar/SideBar";
-import { Skeleton } from "../Skeleton/Skeleton";
+
 import { SkeletonCard } from "../Skeleton/SkeletonCard";
 
 export default function Products() {

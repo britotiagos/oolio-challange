@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
 import OrderSuccess from "./OrderSucess";
 import { PaymentModalType } from "@/app/types/components/PaymentModalType";
 
@@ -16,8 +15,6 @@ function PaymentModal({
   isPromoApplied,
   discount,
 }: PaymentModalType) {
-  const router = useRouter();
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white px-6 py-9 rounded-lg max-w-sm w-full">
