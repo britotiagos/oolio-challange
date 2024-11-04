@@ -3,6 +3,7 @@
 import React from "react";
 import OrderSuccess from "./OrderSucess";
 import { PaymentModalType } from "@/app/types/components/PaymentModalType";
+import { useLockBodyScroll } from "@uidotdev/usehooks";
 
 function PaymentModal({
   cartItems,
@@ -15,6 +16,7 @@ function PaymentModal({
   isPromoApplied,
   discount,
 }: PaymentModalType) {
+  useLockBodyScroll();
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white px-6 py-9 rounded-lg max-w-sm w-full">
