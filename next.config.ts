@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ["orderfoodonline.deno.dev"],
+  },
 };
 
 export default nextConfig;
