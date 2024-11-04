@@ -1,13 +1,45 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProductType } from "../../types/components/ProductType";
+import CartItems from "./CartItems";
+import PaymentModal from "./PaymentModal";
+import { SideBarType } from "@/app/types/components/SideBarType";
 
-function SideBar({ cartItems }: { cartItems: ProductType[] }) {
+function SideBar({ cartItems, handleCartRemove }: SideBarType) {
+  const [promoCode, setPromoCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
+  const [discount, setDiscount] = useState(0);
+
+  const getLowestPriceItem = (items: ProductType[]) => {
+    return Math.min(...items.map((item) => item.price));
+  };
+
+  const handlePromoCode = () => {
+    if (promoCode === "HAPPYHOURS") {
+      const discountAmount = totalPrice * 0.18;
+      setDiscount(discountAmount);
+
+      setIsPromoApplied(true);
+    } else if (promoCode === "BUYGETONE" && cartItems.length > 0) {
+      const lowestPrice = getLowestPriceItem(cartItems);
+      setDiscount(lowestPrice);
+
+      setIsPromoApplied(true);
+    } else {
+      setDiscount(0);
+
+      setIsPromoApplied(false);
+    }
+  };
+
+  useEffect(() => {
+    handlePromoCode();
+  }, [cartItems, promoCode]);
 
   const noItems = cartItems?.length === 0;
   const totalItems = cartItems?.reduce(
@@ -18,6 +50,8 @@ function SideBar({ cartItems }: { cartItems: ProductType[] }) {
     (acc, item) => acc + item.price * (item.quantity || 1),
     0
   );
+  const finalPrice = totalPrice - discount;
+  const formattedFinalPrice = finalPrice.toFixed(2);
 
   const placeOrder = async () => {
     setIsLoading(true);
@@ -34,7 +68,7 @@ function SideBar({ cartItems }: { cartItems: ProductType[] }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ items: orderItems }),
+        body: JSON.stringify({ items: orderItems, couponCode: promoCode }),
       });
 
       const data = await response.json();
@@ -43,7 +77,6 @@ function SideBar({ cartItems }: { cartItems: ProductType[] }) {
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      console.log("Order success:", data);
       setOrderSuccess(true);
     } catch (error) {
       console.error("Order failed:", error);
@@ -57,71 +90,52 @@ function SideBar({ cartItems }: { cartItems: ProductType[] }) {
     }
   };
   return (
-    <div className="bg-white">
-      <p>{`Your Cart (${totalItems || 0})`}</p>
-      {!cartItems && (
+    <div className="bg-white h-fit py-[26px] px-[23px]">
+      <h2 className="text-cartTitle font-semibold text-lg">{`Your Cart (${
+        totalItems || 0
+      })`}</h2>
+      {noItems && (
         <Image
           src={"/images/empty_cart.png"}
           alt="Image of a cake to symbolise an empty cart."
-          width={100}
-          height={100}
-          className="w-auto h-auto"
+          width={121}
+          height={102}
+          priority
+          className="w-[121px] h-[122px] rounded-lg overflow-hidden mt-8 mx-auto"
         />
       )}
-      {noItems && <p>Your added items will appear here</p>}
+      {noItems && (
+        <p className="text-noItems font-semibold text-sm mx-auto flex justify-center mt-[28px]">
+          Your added items will appear here
+        </p>
+      )}
       {!noItems && (
-        <>
-          <ul>
-            {cartItems.map((product) => {
-              const { image, name, price, id } = product || {};
-              return (
-                <li key={id}>
-                  <Image
-                    src={image?.desktop}
-                    alt={name}
-                    width={100}
-                    height={100}
-                    className="w-auto h-auto"
-                  />
-                  <p>{name}</p>
-                  <p>{price}</p>
-                </li>
-              );
-            })}
-          </ul>
-          <p>Order Total: {totalPrice}</p>
-          <button
-            onClick={placeOrder}
-            disabled={isLoading || noItems}
-            className="w-full bg-blue-600 text-white py-2 rounded-md mt-4"
-          >
-            {isLoading ? "Placing Order..." : "Place Order"}
-          </button>
-          {isModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white p-6 rounded-lg max-w-sm w-full">
-                {orderSuccess ? (
-                  <h3 className="text-lg font-semibold text-green-600">
-                    Order Placed Successfully!
-                  </h3>
-                ) : (
-                  <>
-                    <h3 className="text-lg font-semibold text-red-600">
-                      Order Failed
-                    </h3>
-                    <p className="text-gray-600">{error}</p>
-                  </>
-                )}
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
-        </>
+        <CartItems
+          cartItems={cartItems}
+          handleCartRemove={handleCartRemove}
+          placeOrder={placeOrder}
+          isLoading={isLoading}
+          setPromoCode={setPromoCode}
+          promoCode={promoCode}
+          formattedFinalPrice={formattedFinalPrice}
+          handlePromoCode={handlePromoCode}
+          isPromoApplied={isPromoApplied}
+          discount={discount}
+          noItems={noItems}
+        />
+      )}
+      {isModalOpen && (
+        <PaymentModal
+          cartItems={cartItems}
+          handleCartRemove={handleCartRemove}
+          setIsModalOpen={setIsModalOpen}
+          error={error || ""}
+          setOrderSuccess={setOrderSuccess}
+          orderSuccess={orderSuccess}
+          formattedFinalPrice={formattedFinalPrice}
+          isPromoApplied={isPromoApplied}
+          discount={discount}
+        />
       )}
     </div>
   );

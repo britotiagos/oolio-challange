@@ -9,3 +9,9 @@ export type ProductType = {
   };
   quantity?: number;
 };
+
+export type ProductsType = {
+  product: ProductType;
+  handleCartAdd: (product: ProductType) => void;
+  handleCartRemove: (product: ProductType) => void;
+};

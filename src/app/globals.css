@@ -3,13 +3,39 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1e1e1e;
+  --foreground: #ededed;
+  --border: #afa5a4;
+  --button-background: #fdfdfc;
+  --category-color: #a49995;
+  --product-name: #6f6461;
+  --productQuantity: #eab096;
+  --price-color: #bc7863;
+  --add-cart: #766f6d;
+  --title: #3f2d28;
+  --cart-title: #c66c50;
+  --no-items: #988a87;
+  --add-items: #c63b0f;
+  --sidebar-item-name: #716a67;
+  --items-times-price: #c08778;
+  --item-total-price: #b2a8a6;
+  --order-total: #928d8b;
+  --order-total-price: #483a37;
+  --carbon-free-background: #fbf7f4;
+  --carbon-free-text: #968d8b;
+  --carbon-free-span: #837975;
+  --place-order-background: #c73b0e;
+  --place-order-text: #e7ab91;
+  --confirmation-title: #2f1d19;
+  --confirmation-text: #a59b99;
+  --confirmation-items-backgorund: #fcf8f5;
+  --confirmation-items-price: #5d5351;
+  --confirmation-items-total: #7f6f6b;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1e1e1e;
     --foreground: #ededed;
   }
 }
